@@ -2,7 +2,7 @@ import tensorflow as tf
 
 from tensorflow.keras.models import Model
 from tensorflow.keras import Sequential
-from tensofrlow.keras.layers import Conv2D, MaxPooling2D, Conv2DTranspose
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Conv2DTranspose
 
 class Autoencoder(Model):
     def __init__(self, latent_dim=512, input_size=(150, 150)):

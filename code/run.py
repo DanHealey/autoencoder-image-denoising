@@ -2,22 +2,30 @@ import tensorflow as tf
 
 from autoencoder import Autoencoder
 
-from tf.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+# Image data 
+DATA_DIRECTORY = "../data/"
+IMAGE_SIZE = (128, 128)
+
+# Noise parameters
+NOISE_MEAN = 0
+NOISE_STD = 30
+
+# Model hyperparameters
+EPOCHS = 10
+BATCH_SIZE = 32
+LEARNING_RATE = 0.01
+VALIDATION_SPLIT = 0.2
+LATENT_DIM=512
+
+def noiser(original_image):
+    noise = tf.random.normal(original_image.shape, mean=NOISE_MEAN, stddev=NOISE_STD)
+    noisy_image = tf.clip_by_value(original_image + noise, 0, 255)
+    return noisy_image, original_image
 
 
 def main():
-    # Image data 
-    DATA_DIRECTORY = "../data/"
-    IMAGE_SIZE = (128, 128)
-
-    # Hyperparameters
-    EPOCHS = 10
-    BATCH_SIZE = 32
-    LEARNING_RATE = 0.01
-    VALIDATION_SPLIT = 0.2
-
-    LATENT_DIM=512
-
     autoencoder = Autoencoder(LATENT_DIM, IMAGE_SIZE)
 
     train_datagen = ImageDataGenerator(
@@ -26,7 +34,8 @@ def main():
         zoom_range=0,
         horizontal_flip=True,
         vertical_flip=True,
-        validation_split=VALIDATION_SPLIT
+        validation_split=VALIDATION_SPLIT,
+        preprocessing_function=noiser        
         )
 
     train_image_data = train_datagen.flow_from_directory(
@@ -36,7 +45,7 @@ def main():
         classes=None,
         class_mode=None,
         shuffle=True,
-        subset="training"
+        subset="training",
     )
 
     test_image_data = train_datagen.flow_from_directory(
@@ -48,17 +57,22 @@ def main():
         shuffle=True,
         subset="validation"
     )
-
-    # ADD NOISE TO IMAGES
     
+    optimizer = tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE)
+    loss = tf.keras.losses.MeanSquaredError()
+    metrics = [
+        tf.keras.metrics.MeanSquaredError()
+    ]
+
     autoencoder.compile(
-        optimizer='adam', 
-        loss=tf.keras.losses.MeanSquaredError()
+        optimizer=optimizer, 
+        loss=loss,
+        metrics=metrics
     )
 
     autoencoder.fit(
-        train_image_data, 
-        train_image_data,
+        train_image_data[0], 
+        train_image_data[1],
         epochs=EPOCHS,
         shuffle=True,
         validation_data=(test_image_data, test_image_data)
