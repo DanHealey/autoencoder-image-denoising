@@ -5,12 +5,12 @@ from autoencoder import Autoencoder
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Image data 
-DATA_DIRECTORY = "../data/"
+DATA_DIRECTORY = "../data/data/"
 IMAGE_SIZE = (150, 150)
 
 # Model hyperparameters
-EPOCHS = 10
-BATCH_SIZE = 32
+EPOCHS = 25
+BATCH_SIZE = 128
 LEARNING_RATE = 0.01
 VALIDATION_SPLIT = 0.2
 LATENT_DIM=512
@@ -19,6 +19,7 @@ def main():
     autoencoder = Autoencoder(LATENT_DIM, IMAGE_SIZE)
 
     datagen = ImageDataGenerator(
+        rescale=1.0/255.0,
         rotation_range=0,
         shear_range=0,
         zoom_range=0,
