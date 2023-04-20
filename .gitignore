@@ -1,4 +1,6 @@
 # DATA RELATED
+data/
+*.zip
 *.jpg
 *.jpeg
 data/data/seg_pred/
