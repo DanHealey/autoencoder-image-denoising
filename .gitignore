@@ -1,3 +1,11 @@
+# DATA RELATED
+*.jpg
+*.jpeg
+data/data/seg_pred/
+data/data/seg_test/
+data/data/seg_train/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
