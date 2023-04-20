@@ -6,7 +6,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Image data 
 DATA_DIRECTORY = "../data/"
-IMAGE_SIZE = (128, 128)
+IMAGE_SIZE = (150, 150)
 
 # Noise parameters
 NOISE_MEAN = 0
