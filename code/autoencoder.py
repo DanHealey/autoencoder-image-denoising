@@ -21,18 +21,9 @@ class Autoencoder(Model):
 
         # Decoder
         self.decoder = Sequential([
-            Conv2DTranspose(1, (3, 3), strides=2, activation="relu", padding="same")
+            Conv2DTranspose(1, (3, 3), strides=2, activation="sigmoid", padding="same")
         ])
         
     def call(self, x):
-        noisy_image = noiser(x)
-        return self.decoder(self.encoder(noisy_image))
+        return self.decoder(self.encoder(x))
     
-# Noise parameters
-NOISE_MEAN = 0
-NOISE_STD = 30
-
-def noiser(original_image):
-    noise = tf.random.normal(original_image.shape, mean=NOISE_MEAN, stddev=NOISE_STD)
-    noisy_image = tf.clip_by_value(original_image + noise, 0, 255)
-    return noisy_image
