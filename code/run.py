@@ -1,20 +1,25 @@
 import tensorflow as tf
+from PIL import Image
+import numpy as np
 
 from autoencoder import Autoencoder
 
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import load_img, img_to_array, ImageDataGenerator
 
 # Image data 
 TRAIN_DATA_DIRECTORY = "../data/data/train"
 TEST_DATA_DIRECTORY = "../data/data/test"
 IMAGE_SIZE = (150, 150)
 
+# Visualization data
+VISUALIZE_IMAGE_PATH = "../data/data/validation/130.jpg"
+
 # Noise parameters
 NOISE_MEAN = 0
 NOISE_STD = 30
 
 # Model hyperparameters
-EPOCHS = 25
+EPOCHS = 1
 BATCH_SIZE = 32
 LEARNING_RATE = 0.01
 VALIDATION_SPLIT = 0.2
@@ -24,6 +29,17 @@ def noiser(original_image):
     noise = tf.random.normal(original_image.shape, mean=NOISE_MEAN, stddev=NOISE_STD)
     noisy_image = tf.clip_by_value(original_image + noise, 0, 1)
     return noisy_image
+
+def visualize_results(model):
+    image = load_img(VISUALIZE_IMAGE_PATH, target_size=IMAGE_SIZE)
+    image = img_to_array(image)
+    image_input = image.reshape((1, image.shape[0], image.shape[1], image.shape[2]))
+    noisy_image = noiser(image)
+    model_output = model(noisy_image)
+
+    Image.fromarray(np.asarray(image)).show()
+    Image.fromarray(np.asarray(noisy_image)).show()
+    Image.fromarray(np.asarray(model_output)).show()
 
 def main():
     autoencoder = Autoencoder(LATENT_DIM, IMAGE_SIZE)
@@ -80,6 +96,7 @@ def main():
         validation_data=test_generator
     )
 
+    visualize_results(autoencoder)
 
 if __name__ == "__main__":
     main()
