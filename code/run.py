@@ -3,7 +3,7 @@ from PIL import Image
 import numpy as np
 
 from autoencoder import Autoencoder
-
+from gan import WGAN
 from tensorflow.keras.preprocessing.image import load_img, img_to_array, ImageDataGenerator
 
 # Image data 
@@ -19,8 +19,8 @@ NOISE_MEAN = 0
 NOISE_STD = 30/255
 
 # Model hyperparameters
-EPOCHS = 3
-BATCH_SIZE = 8
+EPOCHS = 8
+BATCH_SIZE = 10
 LEARNING_RATE = 0.0005
 VALIDATION_SPLIT = 0.2
 LATENT_DIM=512
@@ -40,14 +40,33 @@ def visualize_results(model):
     image = img_to_array(image)
     image_input = image.reshape((1, image.shape[0], image.shape[1], image.shape[2]))/255
     noisy_image = noiser(image_input)
-    model_output = model(noisy_image)
+    model_output = model.generator(noisy_image)
 
     Image.fromarray((np.asarray(image_input).squeeze()*255).astype(np.uint8)).show()
     Image.fromarray((np.asarray(noisy_image).squeeze()*255).astype(np.uint8)).show()
     Image.fromarray((np.asarray(model_output).squeeze()*255).astype(np.uint8)).show()
 
+class GANMonitor(tf.keras.callbacks.Callback):
+    def __init__(self):
+        pass
+
+    def on_epoch_end(self, epoch, logs=None):
+        #imgs = [5, 30, 61, 69, 242, 284, 319, 423, 515] 
+        imgs = [81641, 726414, 960092, 2148982, 3043766, 5521996, 6261030, 12243003, 15874606]
+        for i in range(len(imgs)):
+            real = img_to_array(load_img(f"C:/datasets/bim/images/{imgs[i]}.jpg", target_size=IMAGE_SIZE))
+            real = real.reshape((1, real.shape[0], real.shape[1], real.shape[2]))/255
+            noisy = noiser(real)
+            tf.keras.preprocessing.image.array_to_img(real[0]).save("epoch_imgs/real_{i}_{epoch}.png".format(i=i, epoch=epoch))
+            tf.keras.preprocessing.image.array_to_img(noisy[0]).save("epoch_imgs/noisy_{i}_{epoch}.png".format(i=i, epoch=epoch))
+
+            denoised = self.model.generator(noisy).numpy()
+            tf.keras.preprocessing.image.array_to_img(denoised[0]).save("epoch_imgs/denoised_{i}_{epoch}.png".format(i=i, epoch=epoch))
+
 def main():
-    autoencoder = Autoencoder(LATENT_DIM, IMAGE_SIZE)
+    #autoencoder = Autoencoder(LATENT_DIM, IMAGE_SIZE)
+
+    gan = WGAN()
 
     train_datagen = ImageDataGenerator(
         rescale=1.0/255.0,
@@ -88,40 +107,49 @@ def main():
         keep_aspect_ratio=True,
     )
     
-    optimizer = tf.optimizers.Adam(learning_rate=LEARNING_RATE)
-    def psnr_loss(y_true, y_pred):
-        return -tf.image.psnr(y_true, y_pred, max_val=1.0)
-    def ssim_loss(y_true, y_pred):
-        return -tf.image.ssim(y_true, y_pred, 1)
-    mse = tf.keras.losses.MeanSquaredError()
-    def mix(y_true, y_pred):
-        return 0.5 * ssim_loss(y_true, y_pred) + 0.5 * mse(y_true, y_pred)
-    loss = ssim_loss
-    metrics = [
-        tf.keras.metrics.MeanSquaredError(),
-        psnr_loss,
-    ]
+    # optimizer = tf.optimizers.Adam(learning_rate=LEARNING_RATE)
+    # def psnr_loss(y_true, y_pred):
+    #     return -tf.image.psnr(y_true, y_pred, max_val=1.0)
+    # def ssim_loss(y_true, y_pred):
+    #     return -tf.image.ssim(y_true, y_pred, 1)
+    # mse = tf.keras.losses.MeanSquaredError()
+    # def mix(y_true, y_pred):
+    #     return 0.5 * ssim_loss(y_true, y_pred) + 0.5 * mse(y_true, y_pred)
+    # loss = ssim_loss
+    # metrics = [
+    #     tf.keras.metrics.MeanSquaredError(),
+    #     psnr_loss,
+    # ]
 
-    autoencoder.compile(
-        optimizer=optimizer, 
-        loss=loss,
-        metrics=metrics
+    gan.compile(
+        #optimizer=optimizer, 
+        #loss=loss,
+        #metrics=metrics
     )
 
-    autoencoder.build(input_shape=(1, IMAGE_SIZE[0], IMAGE_SIZE[1], 3))
-    autoencoder.summary()
+    gan.build(input_shape=(1, IMAGE_SIZE[0], IMAGE_SIZE[1], 3))
+    gan.summary()
+    import datetime
+    log_dir = "C:/logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, update_freq=10)
 
-    autoencoder.fit(
+    img_monitor = GANMonitor()
+
+    chkpt = tf.keras.callbacks.ModelCheckpoint('chkpts/gan_long', save_weights_only=True)
+
+    gan.fit(
         train_generator,
         epochs=EPOCHS,
         shuffle=True,
-        validation_data=test_generator
+        validation_data=test_generator,
+        callbacks=[tensorboard_callback, img_monitor, chkpt]
     )
-
-    autoencoder.save_weights('weights_ssim_only')
+    #autoencoder.load_weights('weights_ssim_only')
+    gan.save_weights('gan_weights_long')
+    #gan.load_weights('gan_weights')
 
     for i in range(10):
-        visualize_results(autoencoder)
+        visualize_results(gan)
 
 if __name__ == "__main__":
     main()

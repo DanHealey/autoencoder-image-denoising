@@ -1,0 +1,44 @@
+Conv2D 3x3x3 stride: 1,1 VALID
+LeakyReLu
+Conv2D 3x3x16 stride: 1,1 VALID
+LeakyReLU
+MaxPool2D 2x2 stride: 2,2 VALID
+
+Conv2D 3x16x16 stride 1,1 VALID
+LeakyReLU
+Conv2D 3x16x64 stride: 1,1 VALID
+LeakyReLU
+MaxPool2D 2x2 stride: 2,2 VALID
+
+Conv2D 3x64x64 stride: 1,1 VALID
+LeakyReLU
+Conv2D 3x64x256 stride: 1,1 VALID
+LeakyReLU
+MaxPool2D 2x2 stride: 2,2 VALID
+
+Conv2D 3x256x256 stride: 1,1 VALID
+LeakyReLU
+Conv2D 3x256x256 stride: 1,1 VALID
+LeakyReLU
+
+Conv2DTranspose 3x256x256 stride: 1,1 VALID
+LeakyReLU
+Conv2DTranspose 3x256x256 stride: 1,1 VALID
+
+Conv2DTranspose 2x256x256 stride: 2,2 VALID
+LeakyReLU
+Conv2dTranspose 3x256x64 stride: 1,1 VALID
+LeakyReLU
+Conv2dTranspose 3x64x64 stride: 1,1 VALID
+
+Conv2DTranspose 2x64x64 stride: 2,2 VALID
+LeakyReLU
+Conv2DTranspose 3x64x16 stride: 1,1 VALID
+LeakyReLU
+Conv2DTranspose 3x16x16 stride: 1,1 VALID
+
+Conv2dTranspose 2x16x16 stride: 2,2 VALID
+LeakyReLU
+Conv2dTranspose 3x16x16 stride: 1,1 VALID
+LeakyReLU 
+Conv2DTranspose 3x16x3 stride: 1,1 VALID

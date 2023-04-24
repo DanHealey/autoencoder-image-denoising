@@ -9,7 +9,7 @@ NOISE_MEAN = 0
 NOISE_STD = 30/255
 
 def noiser(original_image):
-    noise = tf.random.normal(tf.shape(original_image), mean=NOISE_MEAN, stddev=NOISE_STD)
+    noise = tf.random.normal(tf.shape(original_image), mean=NOISE_MEAN, stddev=tf.random.normal([1], mean=NOISE_STD, stddev=NOISE_STD)[0])
     noisy_image = tf.clip_by_value(original_image + noise, 0, 1)
     return noisy_image
 
