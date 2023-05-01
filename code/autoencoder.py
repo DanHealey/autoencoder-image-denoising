@@ -3,6 +3,7 @@ import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Conv2DTranspose, LeakyReLU
+from gan import PixelShuffle
 
 # Noise parameters
 NOISE_MEAN = 0
@@ -78,7 +79,8 @@ class Autoencoder(Model):
         self.bn_5 = tf.keras.layers.BatchNormalization()
         #Conv2DTranspose(16, (3, 3), padding='SAME'),
 
-        self.c6_1 = Conv2DTranspose(16, (3, 3), strides=2, padding='SAME')
+        #self.c6_1 = Conv2DTranspose(16, (3, 3), strides=2, padding='SAME')
+        self.c6_1 = PixelShuffle(2)
         self.c6_2 = LeakyReLU()
         self.bn_6 = tf.keras.layers.BatchNormalization()
         #Conv2DTranspose(16, (3, 3), padding='SAME'),

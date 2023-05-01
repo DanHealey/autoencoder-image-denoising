@@ -1,2 +1,2 @@
-model_checkpoint_path: "chkpts"
-all_model_checkpoint_paths: "chkpts"
+model_checkpoint_path: "auto_new_big"
+all_model_checkpoint_paths: "auto_new_big"
