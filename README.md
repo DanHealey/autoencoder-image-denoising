@@ -29,11 +29,11 @@ Our autoencoder achieved impressive results on our dataset.  It was able to accu
 
 Below is an example of the output of our denoiser. The leftmost image is the original image, the center image is the noisy image (the original with Gaussian random noise added), and the rightmost image is the denoised output image from out CAE-based model.
 
-![](./code/epoch_imgs/real_0_7.png) ![](./code/epoch_imgs/noisy_0_7.png) ![](./code/epoch_imgs/denoised_0_7.png)
+![](./code/auto_imgs_big/real_0_13.png) ![](./code/auto_imgs_big/noisy_0_13.png) ![](./code/auto_imgs_big/denoised_0_13.png)
 
-![](./code/epoch_imgs/real_6_7.png) ![](./code/epoch_imgs/noisy_6_7.png) ![](./code/epoch_imgs/denoised_6_7.png)
+![](./code/auto_imgs_big/real_6_13.png) ![](./code/auto_imgs_big/noisy_6_13.png) ![](./code/auto_imgs_big/denoised_6_13.png)
 
-![](./code/epoch_imgs/real_8_7.png) ![](./code/epoch_imgs/noisy_8_7.png) ![](./code/epoch_imgs/denoised_8_7.png)
+![](./code/auto_imgs_big/real_8_13.png) ![](./code/auto_imgs_big/noisy_8_13.png) ![](./code/auto_imgs_big/denoised_8_13.png)
 
 The above CAE-based model was trained for a total of 8 epochs on our natural image training dataset.
 
