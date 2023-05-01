@@ -1,7 +1,7 @@
 # DATA RELATED
 data/
 *.zip
-*.jpg
+.jpg
 *.jpeg
 data/data/seg_pred/
 data/data/seg_test/
