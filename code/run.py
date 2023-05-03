@@ -7,9 +7,9 @@ from gan import WGAN
 from tensorflow.keras.preprocessing.image import load_img, img_to_array, ImageDataGenerator
 
 # Image data 
-TRAIN_DATA_DIRECTORY = "C:/datasets/bim/images" #"C:/datasets/intel/seg_train"
-TEST_DATA_DIRECTORY = "C:/datasets/bim/images"
-IMAGE_SIZE = (256, 256)
+TRAIN_DATA_DIRECTORY = "C:/datasets/intel/seg_train"
+TEST_DATA_DIRECTORY = "C:/datasets/intel/seg_test"
+IMAGE_SIZE = (152, 152)
 
 # Visualization data
 VISUALIZE_IMAGE_PATH = "C:/datasets/intel/seg_pred/5.jpg"
@@ -52,8 +52,8 @@ class GANMonitor(tf.keras.callbacks.Callback):
         self.generator = generator 
 
     def on_epoch_end(self, epoch, logs=None):
-        #imgs = [5, 30, 61, 69, 242, 284, 319, 423, 515] 
-        imgs = [81641, 726414, 960092, 2148982, 3043766, 5521996, 6261030, 12243003, 15874606]
+        imgs = [5, 30, 61, 69, 242, 284, 319, 423, 515] 
+        #imgs = [81641, 726414, 960092, 2148982, 3043766, 5521996, 6261030, 12243003, 15874606]
         for i in range(len(imgs)):
             real = img_to_array(load_img(f"{self.real_path}/{imgs[i]}.jpg", target_size=IMAGE_SIZE))
             real = real.reshape((1, real.shape[0], real.shape[1], real.shape[2]))/255
@@ -76,7 +76,7 @@ def main():
         zoom_range=0,
         horizontal_flip=True,
         vertical_flip=True,  
-        validation_split=VALIDATION_SPLIT
+        #validation_split=VALIDATION_SPLIT
         #preprocessing_function=resize     
     )
 
@@ -87,7 +87,7 @@ def main():
         classes=None,
         class_mode="input",
         shuffle=True,
-        subset='training',
+        #subset='training',
         keep_aspect_ratio=True,
     )
 
@@ -97,48 +97,48 @@ def main():
         #preprocessing_function=resize
     )
 
-    test_generator = train_datagen.flow_from_directory(
+    test_generator = test_datagen.flow_from_directory(
         TEST_DATA_DIRECTORY,
         batch_size=BATCH_SIZE,
         target_size=IMAGE_SIZE,
         classes=None,
         class_mode="input",
         shuffle=True,
-        subset='validation',
+        #subset='validation',
         keep_aspect_ratio=True,
     )
     
-    optimizer = tf.optimizers.Adam(learning_rate=LEARNING_RATE)
-    def psnr_loss(y_true, y_pred):
-        return -tf.image.psnr(y_true, y_pred, max_val=1.0)
-    def ssim_loss(y_true, y_pred):
-        return -tf.image.ssim(y_true, y_pred, 1)
-    mse = tf.keras.losses.MeanSquaredError()
-    def mix(y_true, y_pred):
-        return 0.5 * ssim_loss(y_true, y_pred) + 0.5 * mse(y_true, y_pred)
-    loss = ssim_loss
-    metrics = [
-        tf.keras.metrics.MeanSquaredError(),
-        psnr_loss,
-    ]
+    # optimizer = tf.optimizers.Adam(learning_rate=LEARNING_RATE)
+    # def psnr_loss(y_true, y_pred):
+    #     return -tf.image.psnr(y_true, y_pred, max_val=1.0)
+    # def ssim_loss(y_true, y_pred):
+    #     return -tf.image.ssim(y_true, y_pred, 1)
+    # mse = tf.keras.losses.MeanSquaredError()
+    # def mix(y_true, y_pred):
+    #     return 0.5 * ssim_loss(y_true, y_pred) + 0.5 * mse(y_true, y_pred)
+    # loss = ssim_loss
+    # metrics = [
+    #     tf.keras.metrics.MeanSquaredError(),
+    #     psnr_loss,
+    # ]
 
-    autoencoder.compile(
-        optimizer=optimizer, 
-        loss=loss,
-        metrics=metrics
+    gan.compile(
+        #optimizer=optimizer, 
+        #loss=loss,
+        #metrics=metrics
     )
 
-    autoencoder.build(input_shape=(1, IMAGE_SIZE[0], IMAGE_SIZE[1], 3))
-    autoencoder.summary()
+    gan.build(input_shape=(1, IMAGE_SIZE[0], IMAGE_SIZE[1], 3))
+    gan.summary()
     #import datetime
     #log_dir = "C:/logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     #tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, update_freq=10)
 
-    img_monitor = GANMonitor("auto_imgs_big", "C:/datasets/bim", autoencoder)
+    img_monitor = GANMonitor("gan_better_pshuffle_imgs", "C:/datasets/intel/seg_pred", gan.generator)
 
-    chkpt = tf.keras.callbacks.ModelCheckpoint('chkpts_auto_big/auto_new', save_weights_only=True)
+    chkpt = tf.keras.callbacks.ModelCheckpoint('gan_better_pshuffle_chkpts/', save_weights_only=True)
 
-    autoencoder.fit(
+    gan.fit(
         train_generator,
         epochs=EPOCHS,
         shuffle=True,
@@ -146,11 +146,11 @@ def main():
         callbacks=[img_monitor, chkpt]
     )
     #autoencoder.load_weights('weights_ssim_only')
-    autoencoder.save_weights('auto_new_big')
+    gan.save_weights('gan_better_pshuffle_weights')
     #gan.load_weights('gan_weights')
 
     for i in range(10):
-        visualize_results(autoencoder)
+        visualize_results(gan)
 
 if __name__ == "__main__":
     main()

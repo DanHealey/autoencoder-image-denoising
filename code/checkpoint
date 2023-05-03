@@ -1,2 +1,2 @@
-model_checkpoint_path: "auto_new_big"
-all_model_checkpoint_paths: "auto_new_big"
+model_checkpoint_path: "gan_better_pshuffle_weights"
+all_model_checkpoint_paths: "gan_better_pshuffle_weights"

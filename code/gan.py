@@ -41,69 +41,129 @@ class WGAN(Model):
 
         #self.c_clip = ClipConstraint(0.05)
         
+        # self.generator = Sequential([
+        #     Conv2D(3, (5, 5), padding='SAME'),
+        #     BatchNormalization(),
+        #     LeakyReLU(),
+
+        #     Conv2D(16, (3, 3), padding='SAME'),
+        #     BatchNormalization(),
+        #     LeakyReLU(),
+
+        #     Conv2D(16, (3, 3), padding='SAME'),
+        #     BatchNormalization(),
+        #     LeakyReLU(),
+        #     MaxPooling2D(),
+
+        #     Conv2D(64, (3, 3), padding='SAME'),
+        #     LeakyReLU(),
+        #     BatchNormalization(),
+
+        #     Conv2D(64, (3, 3), padding='SAME'),
+        #     BatchNormalization(),
+        #     LeakyReLU(),
+        #     MaxPooling2D(),
+
+        #     Conv2D(128, (3, 3), padding='SAME'),
+        #     BatchNormalization(),
+        #     LeakyReLU(),
+        #     BatchNormalization(),
+
+        #     Conv2D(128, (3, 3), padding='SAME'),
+        #     BatchNormalization(),
+        #     LeakyReLU(),
+        #     MaxPooling2D(),
+
+        #     Conv2D(128 * 2, (3, 3), padding='SAME'),
+        #     BatchNormalization(),
+        #     LeakyReLU(),
+        #     PixelShuffle(2),
+
+        #     Conv2D(64, (3, 3), padding='SAME'),
+        #     BatchNormalization(),
+        #     LeakyReLU(),
+
+        #     Conv2D(64, (3, 3), padding='SAME'),
+        #     LeakyReLU(),
+        #     BatchNormalization(),
+        #     PixelShuffle(2),
+
+        #     Conv2D(16, (3, 3), padding='SAME'),
+        #     BatchNormalization(),
+        #     LeakyReLU(),
+            
+        #     Conv2D(12, (3, 3), padding='SAME'),
+        #     BatchNormalization(),
+        #     LeakyReLU(),
+            
+        #     PixelShuffle(2),
+
+        #     Conv2D(3, (3, 3), padding='SAME'),
+        #     BatchNormalization(),
+        #     LeakyReLU(),
+            
+        #     #Conv2D(3, (3, 3), padding='SAME'),
+        #     tf.keras.layers.Activation('sigmoid')
+        # ])
+
         self.generator = Sequential([
-            Conv2D(3, (5, 5), padding='SAME'),
-            BatchNormalization(),
-            LeakyReLU(),
-
-            Conv2D(16, (3, 3), padding='SAME'),
-            BatchNormalization(),
-            LeakyReLU(),
-
-            Conv2D(16, (3, 3), padding='SAME'),
-            BatchNormalization(),
-            LeakyReLU(),
-            MaxPooling2D(),
-
-            Conv2D(64, (3, 3), padding='SAME'),
-            LeakyReLU(),
-            BatchNormalization(),
-
-            Conv2D(64, (3, 3), padding='SAME'),
-            BatchNormalization(),
-            LeakyReLU(),
-            MaxPooling2D(),
-
-            Conv2D(128, (3, 3), padding='SAME'),
-            BatchNormalization(),
-            LeakyReLU(),
-            BatchNormalization(),
-
-            Conv2D(128, (3, 3), padding='SAME'),
-            BatchNormalization(),
-            LeakyReLU(),
-            MaxPooling2D(),
-
-            Conv2D(128 * 2, (3, 3), padding='SAME'),
-            BatchNormalization(),
-            LeakyReLU(),
-            PixelShuffle(2),
-
-            Conv2D(64, (3, 3), padding='SAME'),
-            BatchNormalization(),
-            LeakyReLU(),
-
-            Conv2D(64, (3, 3), padding='SAME'),
-            LeakyReLU(),
-            BatchNormalization(),
-            PixelShuffle(2),
-
-            Conv2D(16, (3, 3), padding='SAME'),
-            BatchNormalization(),
-            LeakyReLU(),
-            
-            Conv2D(12, (3, 3), padding='SAME'),
-            BatchNormalization(),
-            LeakyReLU(),
-            
-            PixelShuffle(2),
-
             Conv2D(3, (3, 3), padding='SAME'),
-            BatchNormalization(),
             LeakyReLU(),
+            Conv2D(16, (3, 3), padding='SAME'),
+            LeakyReLU(),
+            MaxPooling2D(padding='SAME'),
+            tf.keras.layers.BatchNormalization(),
+
+            #Conv2D(16, (3, 3), padding='SAME'),
+            #LeakyReLU(),
+            Conv2D(64, (3, 3), padding='SAME'),
+            LeakyReLU(),
+            tf.keras.layers.BatchNormalization(),
+            #MaxPooling2D(padding='SAME'),
+
+            Conv2D(64, (3, 3), padding='SAME'),
+            LeakyReLU(),
+            Conv2D(256, (3, 3), padding='SAME'),
+            LeakyReLU(),
+            tf.keras.layers.BatchNormalization(),
+            #MaxPooling2D(padding='SAME'),
+
+            Conv2D(256, (3, 3), padding='SAME'),
+            LeakyReLU(),
+            #Conv2D(256, (3, 3), padding='SAME'),
+            #LeakyReLU(),
+
+            # Decoder
+            # self.decoder = Sequential([
+                
+            # ])
+
+            Conv2DTranspose(256, (3, 3), padding='SAME'),
+            LeakyReLU(),
+            #Conv2DTranspose(256, (3, 3), padding='SAME'),
+
+            #Conv2DTranspose(256, (3, 3), strides=2, padding='SAME'),
+            #LeakyReLU(),
+            Conv2DTranspose(256, (3, 3), padding='SAME'),
+            LeakyReLU(),
+            Conv2DTranspose(64, (3, 3), padding='SAME'),
+            LeakyReLU(),
+            tf.keras.layers.BatchNormalization(),
+
+            #Conv2DTranspose(64, (3, 3), strides=2, padding='SAME'),
             
-            #Conv2D(3, (3, 3), padding='SAME'),
-            tf.keras.layers.Activation('sigmoid')
+            Conv2DTranspose(64, (3, 3), padding='SAME'),
+            LeakyReLU(),
+            tf.keras.layers.BatchNormalization(),
+            #Conv2DTranspose(16, (3, 3), padding='SAME'),
+
+            #self.c6_1 = Conv2DTranspose(16, (3, 3), strides=2, padding='SAME')
+            PixelShuffle(2),
+            LeakyReLU(),
+            tf.keras.layers.BatchNormalization(),
+            #Conv2DTranspose(16, (3, 3), padding='SAME'),
+            #LeakyReLU(),
+            Conv2D(3, (3, 3), padding='SAME', activation='sigmoid'),
         ])
 
         self.critic = Sequential([
@@ -125,14 +185,17 @@ class WGAN(Model):
             BatchNormalization(),
             LeakyReLU(),
 
+            Conv2D(128, (5, 5), strides=2),
+            BatchNormalization(),
+            LeakyReLU(),
 
-            Conv2D(64, (5, 5), strides=2),
+            Conv2D(128, (5, 5)),
             BatchNormalization(),
             LeakyReLU(),
 
             Flatten(),
 
-            Dense(32, activation='relu'),
+            Dense(64, activation='relu'),
             Dense(16, activation='relu'),
             Dense(1)
         ])
