@@ -54,4 +54,7 @@ Below is our final poster:
 ![](poster.jpg)
 
 
+### To Run:
+
+`code/run.py` is used to train the model, and also generates visualizations as it goes. To run it, the `TRAIN_DATA_DIRECTORY` and `TRAIN_DATA_DIRECTORY` need to be contain images to run on. Unless the device used has a large amount of VRAM, make sure `IMAGE_SIZE` is `(152, 152)`. The path in `visualize_results` also needs to be adjusted. The smaller dataset can be downloaded from Kaggle: https://www.kaggle.com/datasets/puneet6060/intel-image-classification?resource=download. The larger dataset is Flikr30k: https://www.kaggle.com/datasets/hsankesara/flickr-image-dataset. The latest GAN model weights are those named "gan_pshuffle_better_weights", and correspond to model in `gan.py`. Similarly, "auto_new_big_weights" should contain the trained parameters of the model in autoencoder.py. 
 

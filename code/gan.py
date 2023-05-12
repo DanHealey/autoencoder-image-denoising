@@ -218,7 +218,7 @@ class WGAN(Model):
         noisy_image = tf.clip_by_value(x + noise, 0, 1)
         return noisy_image
 
-    # STRAIGHT FROM TF, MAKE OUR OWN
+    # This function is from TensorFlow: https://keras.io/examples/generative/wgan_gp/
     def gradient_penalty(self, batch_size, real_images, fake_images):
         """Calculates the gradient penalty.
 
